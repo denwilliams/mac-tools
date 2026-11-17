@@ -1,0 +1,3 @@
+# copy to .dev.vars for `npm run dev`
+STREAM_TOKEN=dev-stream-token
+PUSH_TOKENS={"ci":"dev-ci-token","slack":"dev-slack-token"}

@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mac Tools — Island</title>
+<meta name="description" content="A thin status strip and notch island for macOS that anything can push to: Claude Code, Slack, CI, scripts and the cloud.">
+<style>
+:root{
+  --ink:#1d1d1f; --paper:#f5f5f7; --line:#d2d2d7; --white:#ffffff;
+  --accent:#0071e3; --warn:#d9480f;
+  --bg:var(--white); --text:var(--ink); --heading:var(--ink);
+  --s-info:#0A84FF; --s-running:#FF9F0A; --s-waiting:#FFD60A; --s-success:#30D158; --s-warning:#FFD60A; --s-error:#FF453A;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;font-weight:300;line-height:1.65;font-size:17px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+header.top{background:var(--ink);color:var(--paper)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+header.top .brand{font-weight:700;letter-spacing:-.01em}
+header.top nav a{color:var(--paper);text-decoration:none;font-weight:600;font-size:.85em;margin-left:20px;opacity:.85}
+header.top nav a:hover{opacity:1;color:#2997ff}
+@media(max-width:640px){header.top nav{display:none}}
+.hero{background:var(--paper);padding:64px 0 56px}
+h1,h2{font-weight:700;letter-spacing:-.02em;color:var(--heading);line-height:1.2;margin:0}
+h1{font-size:2.4em}
+h2{font-size:1.8em;margin-bottom:.4em}
+h3{font-size:1.3em;font-weight:600;margin:1.6em 0 .4em}
+.hero p.lead{font-size:1.2em;max-width:680px;margin:18px 0 26px}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;padding:11px 20px;border-radius:var(--radius)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink);margin-left:8px}
+section{padding:56px 0;border-top:1px solid var(--line)}
+section.alt{background:var(--paper)}
+.sub{max-width:680px;margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--white);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);padding:18px 20px}
+section.alt .card{border-color:var(--line)}
+.card h3{margin:0 0 6px;font-size:1.1em}
+.card p{margin:0;font-size:.95em}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+code{background:var(--paper);padding:1px 6px;border-radius:5px;font-size:.88em}
+pre{background:var(--ink);color:var(--paper);padding:16px 18px;border-radius:var(--radius);overflow-x:auto;font-size:.85em;line-height:1.55;margin:12px 0}
+pre .c{color:#9a9a9a} pre .g{color:#2997ff}
+table{width:100%;border-collapse:collapse;font-size:.92em;background:var(--white)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;background:var(--paper)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.chip{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:99px;padding:5px 14px 5px 8px;font-size:.88em;font-weight:600}
+.chip i{width:14px;height:14px;border-radius:50%;display:block}
+.callout{border-left:4px solid var(--warn);background:rgba(217,72,15,.08);padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;margin:20px 0}
+.callout.ok{border-color:var(--s-success);background:rgba(48,209,88,.1)}
+.callout p{margin:0}
+.callout p+p{margin-top:8px}
+/* mockup */
+.screen{background:var(--ink);border-radius:14px;padding:0 0 26px;color:#fff;overflow:hidden;margin:26px 0;position:relative}
+.menubar{height:26px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:12px;font-weight:600;position:relative}
+.menubar .clock{opacity:.9}
+.strip{position:absolute;top:0;z-index:3;height:3px;right:118px;display:flex;flex-direction:row-reverse;gap:2px}
+.strip b{display:block;height:3px;width:110px;position:relative;overflow:hidden}
+.strip b span{position:absolute;inset:0 auto 0 0}
+.strip b.run{background:rgba(255,159,10,.25)} .strip b.run span{background:var(--s-running);width:55%}
+.strip b.wait{background:var(--s-waiting)} .strip b.ok{background:var(--s-success)}
+.island{width:min(86%,400px);margin:0 auto;background:#000;border-radius:0 0 24px 24px;padding:34px 14px 14px;position:absolute;left:50%;transform:translateX(-50%);top:0;z-index:2}
+.row{display:flex;gap:10px;align-items:center;padding:6px 0}
+.row .ic{width:28px;height:28px;border-radius:50%;flex:none}
+.row .t{font-weight:700;font-size:13px}.row .s{font-size:11px;opacity:.6;font-weight:400}
+.row .tag{font-size:10px;background:rgba(255,255,255,.12);border-radius:99px;padding:1px 6px;margin-left:6px;font-weight:600;opacity:.7}
+.screen .pad{height:190px}
+@media(max-width:560px){.strip b{width:60px}.strip{right:90px}}
+footer{background:var(--ink);color:var(--paper);padding:30px 0;font-size:.85em}
+footer a{color:#2997ff}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <span class="brand">Mac Tools</span>
+  <nav><a href="#how">How it works</a><a href="#push">Pushing</a><a href="#cli">CLI</a><a href="#claude">Claude Code</a><a href="#cloud">Cloud</a><a href="#status">Status</a></nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <h1>Mac Tools: Island</h1>
+  <p class="lead">A thin colour strip across the top of your screen that drops down to show what just happened, then gets out of the way. Anything can push to it: Claude Code sessions, your Slack harness, CI jobs, scripts, or cloud services.</p>
+  <a class="btn" href="#push">How to push to it</a><a class="btn ghost" href="#cli">The CLI</a>
+</div></div>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="sub">Island is one app in a suite of Mac tools. It lives in the menu bar and draws over the top edge of every display. Native Swift and SwiftUI, no Electron.</p>
+
+  <div class="screen" aria-label="Illustration of the strip and island">
+    <div class="menubar"><span> Finder &nbsp; File &nbsp; Edit &nbsp; View</span><span class="clock">Tue 17 Nov &nbsp; 10:53</span>
+      <div class="strip"><b class="run"><span></span></b><b class="wait"></b><b class="ok"></b></div>
+    </div>
+    <div class="island">
+      <div class="row"><div class="ic" style="background:rgba(255,159,10,.25)"></div><div><div class="t">mac-tools<span class="tag">claude</span></div><div class="s">Running Bash</div></div></div>
+      <div class="row"><div class="ic" style="background:rgba(255,214,10,.25)"></div><div><div class="t">New DM from Sam<span class="tag">slack</span></div><div class="s">Can you look at this?</div></div></div>
+      <div class="row"><div class="ic" style="background:rgba(48,209,88,.25)"></div><div><div class="t">Deploy<span class="tag">ci</span></div><div class="s">Done in 2m 14s</div></div></div>
+    </div>
+    <div class="pad"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h3>1. Ambient strip</h3><p>A 3px strip sits beside the clock. It's invisible when idle and goes colour when something happens: one segment per activity, filled by progress, pulsing while running or waiting.</p></div>
+    <div class="card"><h3>2. Auto drop-down</h3><p>When a new message arrives the island drops down for about five seconds to show the content, then retracts. Mark an event <code>quiet</code> to skip this.</p></div>
+    <div class="card"><h3>3. Hover to interact</h3><p>Rest the cursor on the top edge for a moment and the island opens. Click a row to open its link, or dismiss it with the x. It closes shortly after you leave.</p></div>
+    <div class="card"><h3>4. Every display</h3><p>One click-through window per screen, so it works on a notched MacBook, an external monitor, or both. The strip never blocks the menu bar.</p></div>
+  </div>
+
+  <h3>Status colours</h3>
+  <div class="chips">
+    <span class="chip"><i style="background:var(--s-info)"></i>info</span>
+    <span class="chip"><i style="background:var(--s-running)"></i>running (pulses, up to 30 min)</span>
+    <span class="chip"><i style="background:var(--s-waiting)"></i>waiting (pulses fast, up to 1 hr)</span>
+    <span class="chip"><i style="background:var(--s-success)"></i>success (10 s)</span>
+    <span class="chip"><i style="background:var(--s-warning)"></i>warning (10 s)</span>
+    <span class="chip"><i style="background:var(--s-error)"></i>error (pulses, 30 s)</span>
+  </div>
+  <p>Times in brackets are how long an event stays if its sender never updates or clears it. Override with <code>ttl</code>.</p>
+</div></section>
+
+<section id="push" class="alt"><div class="wrap">
+  <h2>Pushing content</h2>
+  <p class="sub">Four ways in, one event format. Pick whichever your sender can do.</p>
+
+  <h3>Event fields</h3>
+  <table>
+    <tr><th>Field</th><th>Notes</th></tr>
+    <tr><td><code>title</code></td><td>Required.</td></tr>
+    <tr><td><code>id</code></td><td>Upsert key. Reuse it to update a row instead of adding a new one. Generated if omitted.</td></tr>
+    <tr><td><code>subtitle</code>, <code>source</code></td><td>Second line, and a small tag (for example <code>claude</code> or <code>slack</code>).</td></tr>
+    <tr><td><code>status</code></td><td><code>info</code> · <code>running</code> · <code>waiting</code> · <code>success</code> · <code>warning</code> · <code>error</code>. Sets the colour.</td></tr>
+    <tr><td><code>progress</code></td><td>0 to 1. Fills the strip segment.</td></tr>
+    <tr><td><code>icon</code></td><td>An SF Symbol name.</td></tr>
+    <tr><td><code>url</code></td><td>Opened when the row is clicked.</td></tr>
+    <tr><td><code>ttl</code></td><td>Seconds before it disappears.</td></tr>
+    <tr><td><code>quiet</code>, <code>sound</code></td><td>Don't drop the island down on arrival; play a sound.</td></tr>
+  </table>
+
+  <h3>1. HTTP</h3>
+  <p>The app listens on <code>127.0.0.1:7878</code>, loopback only. Send an object or an array.</p>
+<pre><span class="c"># add or update</span>
+curl -X POST 127.0.0.1:7878/v1/events \
+  -H 'content-type: application/json' \
+  -d '{"id":"deploy","title":"Deploying","status":"running","progress":0.4}'
+
+<span class="c"># remove one / remove all</span>
+curl -X DELETE 127.0.0.1:7878/v1/events/deploy
+curl -X POST   127.0.0.1:7878/v1/clear</pre>
+  <div class="callout"><p>Use <code>127.0.0.1</code>, not <code>localhost</code>. The <code>content-type: application/json</code> header is required, and requests carrying an <code>Origin</code> header are rejected, so a web page in your browser can't push to it.</p></div>
+
+  <h3>2. Node</h3>
+<pre>import { push } from './tools/notch-push.mjs';
+await push({ id: 'deploy', title: 'Deploying', status: 'running', progress: 0.4 });
+await push({ op: 'clear', id: 'deploy' });</pre>
+
+  <h3>3. Drop a file</h3>
+  <p>Write a <code>.json</code> file (one event or an array) into <code>~/.mactools/inbox/</code>. It's picked up within half a second and deleted. Good for scripts that can't make HTTP calls.</p>
+
+  <h3>4. The cloud</h3>
+  <p>See <a href="#cloud">Cloud push</a> below.</p>
+</div></section>
+
+<section id="cli"><div class="wrap">
+  <h2>The <code>notch</code> CLI</h2>
+  <p class="sub">A single zero-dependency Node script. Symlink <code>tools/notch.mjs</code> onto your PATH as <code>notch</code>.</p>
+<pre>notch "Deploying" "prod" -s running -p 40 -i deploy   <span class="c"># title, subtitle, flags</span>
+notch "Deploy done" -s success -i deploy --sound      <span class="c"># same id updates the row</span>
+notch run --title "Tests" -- npm test                 <span class="c"># wrap a command</span>
+long_job | notch json                                 <span class="c"># event JSON from stdin</span>
+notch clear deploy                                    <span class="c"># one row; `notch clear` = all</span>
+notch ping                                            <span class="c"># is the island running?</span></pre>
+  <div class="callout ok">
+    <p><b>notch run</b> is the useful one. It shows your command as running, then flips to success with the time taken ("Done in 2m 14s") or error with the exit code. Output passes through and the exit code is preserved, so it's safe in scripts and <code>&amp;&amp;</code> chains. If the island isn't running, your command still runs.</p>
+  </div>
+  <p>Flags: <code>-i</code> id, <code>-s</code> status, <code>-p</code> progress (0–1 or 0–100), <code>-u</code> url, <code>-t</code> title, <code>--source</code>, <code>--icon</code>, <code>--ttl</code>, <code>--quiet</code>, <code>--sound</code>. Set <code>NOTCH_URL</code> to point at a different address.</p>
+</div></section>
+
+<section id="claude" class="alt"><div class="wrap">
+  <h2>Claude Code sessions</h2>
+  <p class="sub"><code>tools/claude-hook.mjs</code> turns Claude Code hook events into one row per session, labelled with the project folder.</p>
+  <table>
+    <tr><th>Hook</th><th>Shows</th></tr>
+    <tr><td>UserPromptSubmit</td><td>Running, with the start of your prompt</td></tr>
+    <tr><td>PreToolUse</td><td>Running, with the tool name</td></tr>
+    <tr><td>Notification</td><td>Waiting (yellow, with sound): Claude needs you</td></tr>
+    <tr><td>Stop</td><td>Done (green, with sound)</td></tr>
+    <tr><td>SessionEnd</td><td>Row removed</td></tr>
+  </table>
+  <p>Add to <code>~/.claude/settings.json</code>, repeating the same command block for each hook name above:</p>
+<pre>{
+  "hooks": {
+    "Stop": [
+      { "hooks": [ { "type": "command",
+          "command": "node /path/to/mac-tools/tools/claude-hook.mjs" } ] }
+    ]
+  }
+}</pre>
+  <p>The hook never blocks Claude: if the island isn't running it exits quietly.</p>
+</div></section>
+
+<section id="cloud"><div class="wrap">
+  <h2>Cloud push</h2>
+  <p class="sub">Cloud systems can't reach your Mac directly, so you host a tiny relay. They POST to it; your Mac holds a connection to its stream and shows what arrives.</p>
+<pre><span class="c"># 1. run the relay anywhere that runs Node (behind HTTPS)</span>
+PUSH_TOKEN=... STREAM_TOKEN=... node relay/server.mjs
+
+<span class="c"># 2. cloud systems push</span>
+curl -X POST https://your-host/push \
+  -H 'Authorization: Bearer $PUSH_TOKEN' -H 'content-type: application/json' \
+  -d '{"title":"Alert","status":"error","source":"prod"}'
+
+<span class="c"># 3. ~/.mactools/config.json on your Mac</span>
+{ "relay": { "url": "https://your-host/stream", "token": "..." } }</pre>
+  <p>The Mac reconnects automatically with backoff, and the relay replays its last 20 events to a reconnecting client. Use two different tokens: one for senders, one for your Mac.</p>
+</div></section>
+
+<section id="status" class="alt"><div class="wrap">
+  <h2>Status</h2>
+  <div class="callout"><p><b>Early version.</b> It runs as a debug build from the project folder, not yet a packaged <code>.app</code> with launch-at-login. The cloud relay and the Claude Code hook script haven't been exercised end to end yet.</p></div>
+  <h3>Next up</h3>
+  <div class="grid">
+    <div class="card"><h3>Packaged app</h3><p>A proper <code>.app</code> with launch-at-login.</p></div>
+    <div class="card"><h3>Controls</h3><p>Right-click menu on the island, a hotkey to clear everything, and an option to hide the menu-bar icon.</p></div>
+    <div class="card"><h3>Action buttons</h3><p>Approve or deny from a row, sent back to whatever pushed it.</p></div>
+    <div class="card"><h3>More tools</h3><p>Island is the first of many. The suite is one app with many functions.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Mac Tools · requires macOS 14 or later</div></footer>
+</body>
+</html>
