@@ -55,6 +55,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = NSImage(systemSymbolName: "capsule.tophalf.filled", accessibilityDescription: "Mac Tools")
         let menu = NSMenu()
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+        menu.addItem(withTitle: "Mac Tools \(version)", action: nil, keyEquivalent: "").isEnabled = false
         menu.addItem(withTitle: "Listening on 127.0.0.1:\(config.port)", action: nil, keyEquivalent: "").isEnabled = false
         menu.addItem(.separator())
         let clear = NSMenuItem(title: "Clear all", action: #selector(clearAll), keyEquivalent: "k"); clear.target = self
