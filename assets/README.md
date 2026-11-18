@@ -27,6 +27,33 @@ confirm the handle, toolbox body and central latch remain distinguishable.
 The seam may be subtle at 16px; do not redraw the selected geometry just to
 make that detail heavier.
 
+## Review screenshots
+
+The [desktop preview](previews/desktop.png) and [mobile preview](previews/mobile.png)
+show the checked-in PNGs at native 256, 16, 32 and 64 pixel sizes against light
+and dark backgrounds. Open [the preview page](previews/index.html) locally to
+inspect the artwork without GitHub scaling the screenshot to fit its page.
+These are **browser-rendered artwork screenshots**, not screenshots of the
+installed app, Finder, Get Info or the Dock. No icon artwork or website is changed
+by this preview page.
+
+To reproduce, install development-only `playwright-core@1.52.0` and a compatible
+Firefox browser outside the repository. Run from the repository root, pointing
+`NODE_PATH` at that installation's `node_modules` and `ICON_PREVIEW_BROWSER` at
+the Firefox executable (omit the latter for Playwright's installed Firefox):
+
+```sh
+NODE_PATH=/path/to/node_modules ICON_PREVIEW_BROWSER=/path/to/firefox \
+  node scripts/capture-icon-previews.cjs
+```
+
+The committed screenshots were captured on Linux using Playwright Core 1.52.0
+with `/opt/camoufox/camoufox`, at a 1100×740 desktop viewport and a 390×844 mobile
+viewport, full-page, with device scale factor 1. Fonts/browser versions can
+change text rendering. The capture script verifies that all eight images decode
+and display at native dimensions with no horizontal overflow before saving.
+No Node/browser dependencies are needed for app builds or the portable tests.
+
 ## Verify on an authorized macOS machine
 
 ```sh
