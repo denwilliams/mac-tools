@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mac Tools — app icon artwork preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px; background: #e8e9ec; color: #20232a; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 1100px; margin: auto; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    .note { margin: 0 0 24px; max-width: 850px; }
+    .themes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    section { padding: 24px; border: 1px solid #ccc; border-radius: 16px; background: #fff; color: #20232a; }
+    .dark { background: #20232a; color: #f5f5f7; border-color: #363b45; }
+    h2 { font-size: 20px; margin: 0; }
+    .hero { display: block; width: 256px; height: 256px; max-width: 100%; margin: 16px auto; }
+    .sizes { display: flex; justify-content: center; align-items: end; gap: 24px; }
+    figure { margin: 0; text-align: center; }
+    figure img { display: block; margin: 0 auto 8px; }
+    figcaption { font-size: 13px; }
+    .caption { font-size: 13px; margin: 18px 0 0; }
+    footer { margin-top: 18px; font-size: 13px; }
+    @media (max-width: 700px) {
+      body { padding: 20px; }
+      .themes { grid-template-columns: 1fr; }
+      section { padding: 20px; }
+      .sizes { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mac Tools — orange toolbox icon</h1>
+    <p class="note">Browser-rendered artwork preview of the checked-in PNGs. Not a macOS app, Finder, Get Info or Dock screenshot. Packaged-app appearance and signing still require an authorized macOS check.</p>
+    <div class="themes">
+      <section aria-labelledby="light-title">
+        <h2 id="light-title">Light background</h2>
+        <img class="hero" src="../AppIcon.iconset/icon_256x256.png" width="256" height="256" alt="Selected orange tile and ivory toolbox at 256 pixels">
+        <div class="sizes">
+          <figure><img src="../AppIcon.iconset/icon_16x16.png" width="16" height="16" alt="16 pixel icon"><figcaption>16 px</figcaption></figure>
+          <figure><img src="../AppIcon.iconset/icon_32x32.png" width="32" height="32" alt="32 pixel icon"><figcaption>32 px</figcaption></figure>
+          <figure><img src="../AppIcon.iconset/icon_32x32@2x.png" width="64" height="64" alt="64 pixel icon"><figcaption>64 px</figcaption></figure>
+        </div>
+        <p class="caption">Native-size PNGs at 1× device scale. The seam is subtle at 16 px.</p>
+      </section>
+      <section class="dark" aria-labelledby="dark-title">
+        <h2 id="dark-title">Dark background</h2>
+        <img class="hero" src="../AppIcon.iconset/icon_256x256.png" width="256" height="256" alt="Selected orange tile and ivory toolbox at 256 pixels">
+        <div class="sizes">
+          <figure><img src="../AppIcon.iconset/icon_16x16.png" width="16" height="16" alt="16 pixel icon"><figcaption>16 px</figcaption></figure>
+          <figure><img src="../AppIcon.iconset/icon_32x32.png" width="32" height="32" alt="32 pixel icon"><figcaption>32 px</figcaption></figure>
+          <figure><img src="../AppIcon.iconset/icon_32x32@2x.png" width="64" height="64" alt="64 pixel icon"><figcaption>64 px</figcaption></figure>
+        </div>
+        <p class="caption">Native-size PNGs at 1× device scale. The seam is subtle at 16 px.</p>
+      </section>
+    </div>
+    <footer>Selected concept 01 — Everyday toolbox · Issue #1 · Artwork unchanged</footer>
+  </main>
+</body>
+</html>
