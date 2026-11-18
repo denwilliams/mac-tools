@@ -13,6 +13,8 @@ Requires macOS 14+. It runs from the menu bar (no Dock icon).
 ## Build from source
 `swift build && .build/out/Products/Debug/MacTools` (or `swift run`). To make the app bundle and zip: `scripts/build-app.sh`.
 The version comes from the `VERSION` file.
+App icon source, regeneration and macOS verification instructions are in [assets/README.md](assets/README.md).
+Portable icon and bundle-wiring tests: `python3 -m unittest discover -s tests -v` (not a macOS build check).
 
 ## Pushing
 Event fields: `id` (upsert key), `title` (required), `subtitle`, `source`, `status`
